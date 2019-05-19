@@ -1,8 +1,7 @@
 package vector;
 
-import vector.util.FileIO;
-import vector.util.Tool;
-import vector.util.VectorColor;
+import vector.util.*;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -11,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.awt.Color.*;
@@ -124,26 +122,28 @@ public class GUI  {
         menuBar.add(fileMenu);
         frame.setJMenuBar(menuBar);
     }
-    public JButton addListener(JButton button, ActionListener e){
+    private void addListener(JButton button, ActionListener e){
         button.addActionListener(e);
-        return button;
+      //  return button;
     }
-    public void colourButtonPressed(ArrayList<JButton> buttonArrayList){
+    private void colourButtonPressed(ArrayList<JButton> buttonArrayList){
         for (JButton button : buttonArrayList){
-            addListener(button, (event) -> colourButtonFunctions(button));
+            // remove to make these buttons functional
+            if(!button.getName().equals("PENCOLOUR") || button.getName().equals("FILLCOLOUR")) {
+                addListener(button, (event) -> colourButtonFunctions(button, buttonArrayList));
+            }
         }
     }
 
-    public int ColortoInt(Color colour){
+    private int ColortoInt(Color colour){
         int r = colour.getRed();
         int g = colour.getGreen();
         int b = colour.getBlue();
         return (r*65536)+(g*256)+b;
     }
-    public void colourButtonFunctions(JButton button){
-        System.out.println(button.getName());
+    private void colourButtonFunctions(JButton button, ArrayList<JButton>buttonArrayList){
         Color colour;
-        if(button.getName().equals("picker") && penPressed || button.getName().equals("picker") &&fillPressed){
+        if(button.getName().equals("PICKER") && penPressed || button.getName().equals("PICKER") &&fillPressed){
             colour = JColorChooser.showDialog(null, "Choose a Color", Color.black);
         }
         else{
@@ -153,124 +153,130 @@ public class GUI  {
         int rgb = ColortoInt(colour);
 
 
-        if(button.getName().equals("pen")){
+        if(button.getName().equals("PEN")){
             fillPressed = false;
             penPressed = true;
         }
-        else if(button.getName().equals("fill")){
+
+        else if(button.getName().equals("FILL")){
             penPressed = false;
             fillPressed = true;
         }
         else{
             // error message to till user to click pen or fill first
         }
-        if(!button.getName().equals("pen")&& !button.getName().equals("fill") && penPressed){
+        if(!button.getName().equals("pen")&& !button.getName().equals("fill") && !fillPressed && penPressed){
             canvas.setSelectedPenColor(new VectorColor(rgb));
+            buttonArrayList.get(1).setBackground(colour);
             System.out.println(canvas.getSelectedPenColor().toString());
-            penPressed = false;
         }
-        else if( !button.getName().equals("fill")&& !button.getName().equals("pen") && fillPressed){
+        else if( !button.getName().equals("fill")&& !button.getName().equals("pen") && !penPressed && fillPressed){
             canvas.setSelectedFillColor(new VectorColor(rgb));
+            buttonArrayList.get(3).setBackground(colour);
             System.out.println(canvas.getSelectedFillColor().toString());
-            fillPressed = false;
         }
     }
 
 
-    public void shapeButtonFunctions(Tool tool){
+    private void shapeButtonFunctions(Tool tool){
         canvas.selectTool(tool);
-        System.out.println(canvas.getselectTool());
     }
 
-    private JButton palletButton() {
-        JButton output = new JButton("");
-        output.setPreferredSize(new Dimension(20,20));
-        return output;
-    }
+    private HashMap<Tool, JButton> toolButtons(){
+        HashMap<Tool, JButton> ToolButtons = new HashMap<>();
 
-    private HashMap<Tool, JButton> shapeButton(){
-        HashMap<Tool, JButton> buttons = new HashMap<>();
         for (Tool name : Tool.values()) {
-            JButton button = new JButton(name.name());
+            JButton button = new JButton(name.getImage());
+
             button.addActionListener((event) -> shapeButtonFunctions(name));
-            buttons.put(name, button);
+            ToolButtons.put(name, button);
         }
-        return buttons;
+        return ToolButtons;
     }
 
     private void zoom(int amount) {
-        canvas.zoom(100);
+        canvas.zoom(amount);
         mainPanel.setPreferredSize(canvas.getSize());
         frame.pack();
     }
 
-    private JButton[] toolButton(){
-        JButton zoomPlus = new JButton("PLUS");
-        addListener(zoomPlus, (event) -> zoom(100));
-      //  zoomPlus.setPreferredSize(new Dimension(45,55));
-        JButton zoomMinus = new JButton("MINUS");
-       // zoomMinus.setPreferredSize(new Dimension(45,55));
-        addListener(zoomMinus, (event) -> zoom(-100));
 
-        JButton undo = new JButton("UNDO");
-        addListener(undo, (event) -> canvas.undo());
-      //  undo.setPreferredSize(new Dimension(45,55));
-        return new JButton[]{zoomPlus, zoomMinus, undo};
-    }
-    public ArrayList<JButton> colourButton(){
-        Color[] colourBackground = { RED, BLUE, GREEN, WHITE, BLACK, YELLOW, ORANGE, PINK, CYAN, GRAY};//, blue, green, white, black, yellow, orange, pink, cyan, clear};
-
-        JButton pen = new JButton("PEN");
-        pen.setName("pen");
-       // pen.setPreferredSize(new Dimension(45,20));
-        JButton fill = new JButton("FILL");
-        fill.setName("fill");
-      //  fill.setPreferredSize(new Dimension(45,20));
-        JButton picker = new JButton("PICKER");
-        picker.setName("picker");
-      //  picker.setPreferredSize(new Dimension(45,20));
-        JButton red = new JButton();
-        JButton blue = new JButton();
-        JButton green = new JButton();
-        JButton white = new JButton();
-        JButton black = new JButton();
-        JButton yellow = new JButton();
-        JButton orange = new JButton();
-        JButton pink = new JButton();
-        JButton cyan= new JButton();
-        JButton clear = new JButton();
-
-        JButton[] colourButtonNames = {red, blue, green, white, black, yellow, orange, pink, cyan, clear};
-        String[] colourNames = {"red","blue", "green", "white", "black", "yellow", "orange", "pink", "cyan", "clear"};
-        ArrayList<JButton> colourButtonArrayList = new ArrayList<>(Arrays.asList(pen,fill,picker));
-
-        int counter = 0;
-        for(JButton i : colourButtonNames){
-            i.setPreferredSize(new Dimension(20,20));
-            i.setBackground(colourBackground[counter]);
-            i.setName(colourNames[counter]);
-            colourButtonArrayList.add(i);
-            counter ++;
+    private void UtilitiesButtonsFunctions(JButton button, Utilities Utility) {
+        switch (Utility.name()) {
+            case "ZOOM_IN":
+                addListener(button, (event) -> zoom(100));
+                break;
+            case "ZOOM_OUT":
+                addListener(button, (event) -> zoom(-100));
+                break;
+            case "UNDO":
+                addListener(button, (event) -> canvas.undo());
+                break;
         }
-        colourButtonPressed(colourButtonArrayList);
+    }
 
-        return colourButtonArrayList;
+    private HashMap<Utilities, JButton>  utilityButtons(){
+        HashMap<Utilities, JButton> UtilitiesButtons = new HashMap<>();
+        for (Utilities Utility  : Utilities.values()) {
+            JButton button = new JButton(Utility.getImage());
+            UtilitiesButtonsFunctions(button, Utility);
+            UtilitiesButtons.put(Utility, button);
+        }
+        return UtilitiesButtons;
+    }
+
+    private void colourButtonTools(ArrayList<JButton> colourPanelButtons){
+       for(ColourTools ColourTools : ColourTools.values()){
+
+            JButton colourToolButton = new JButton(ColourTools.getImage());
+            colourToolButton.setName(ColourTools.name());
+            ColourTools.setSize(colourToolButton);
+
+            colourPanelButtons.add(colourToolButton);
+       }
+      // return colourPanelButtons; // return type ArrayList<JButton>
+    }
+    private void colourButtonOptions(ArrayList<JButton> colourPanelButtons){
+        for(ColourQuickSelect quickSelect : ColourQuickSelect.values()){
+            JButton button = new JButton();
+            button.setName(quickSelect.name());
+            quickSelect.setSize(button);
+            button.setBackground(quickSelect.getValue(quickSelect.getEnum(button)));
+
+           colourPanelButtons.add(button);
+        }
+       // return colourPanelButtons; // return type ArrayList<JButton>
+    }
+
+    private ArrayList<JButton> colourButtons(){
+        ArrayList<JButton> colourPanelButtons = new ArrayList<>();
+        colourButtonTools(colourPanelButtons);
+        colourButtonOptions(colourPanelButtons);
+        colourButtonPressed(colourPanelButtons);
+
+        return colourPanelButtons;
     }
 
     private void showToolPalette(){
-        JPanel x = new JPanel();
-        x.setBackground(pink);
+        JPanel basePallet = new JPanel();
+        basePallet.setBackground(pink);
         JPanel pallet = new JPanel();
-        x.add(pallet);
-        BoxLayout boxlayout = new BoxLayout(pallet, BoxLayout.Y_AXIS);
-        pallet.setLayout(boxlayout);
+        basePallet.add(pallet);
+        BoxLayout boxLayout = new BoxLayout(pallet, BoxLayout.Y_AXIS);
+        pallet.setLayout(boxLayout);
 
-        pallet.setMaximumSize(new Dimension(50, 800));
-        pallet.setMinimumSize(new Dimension(50,800));
-        pallet.setPreferredSize(new Dimension(50, 700));
-        JPanel shapePallet = new JPanel();
-        //shapePallet.setMaximumSize(new Dimension(500,100));
-        JPanel toolPallet = new JPanel();
+
+
+       // pallet.setMaximumSize(new Dimension(60, 800));
+        pallet.setMinimumSize(new Dimension(60,650));
+        pallet.setPreferredSize(new Dimension(61, 650));
+
+        JPanel shapePallet = new JPanel(new GridLayout(5,1));
+        shapePallet.setMaximumSize(new Dimension(60,100));
+
+        JPanel toolPallet = new JPanel(new GridLayout(3,1));
+        toolPallet.setMaximumSize(new Dimension(70,120));
+
         JPanel colourPallet = new JPanel();
 
         pallet.setBackground(Color.lightGray);
@@ -281,54 +287,42 @@ public class GUI  {
 
         //shapePallet.setPreferredSize(new Dimension(50,100));
         shapePallet.setBackground(Color.BLACK);
+        shapePallet.setBorder(BorderFactory.createTitledBorder("Shapes"));
      //   shapePallet.setLayout(new GridLayout(5,1));
        // toolPallet.setPreferredSize(new Dimension(50,300));
         toolPallet.setBackground(Color.GREEN);
+        toolPallet.setBorder(BorderFactory.createTitledBorder("Tools"));
       //  toolPallet.setLayout(new GridLayout(3,1));
        // colourPallet.setPreferredSize(new Dimension(50,300));
         colourPallet.setBackground(RED);
+        colourPallet.setBorder(BorderFactory.createTitledBorder("Colours"));
         //colourPallet.setLayout(new GridLayout(3,1));
 
-        for(JButton button : shapeButton().values()){
+        for(JButton button : toolButtons().values()){
+           // button.setPreferredSize(new Dimension(30,30));
             shapePallet.add(button);
         }
-        for(JButton button : toolButton()){
+        for(JButton button : utilityButtons().values()){
+          //  button.setPreferredSize(new Dimension(30,30));
             toolPallet.add(button);
         }
-        for (JButton button : colourButton()){
+        for (JButton button : colourButtons()){
             colourPallet.add(button);
         }
-
-      //  shapePallet.setPreferredSize(new Dimension(50,20));
-        palletConstraints.fill = GridBagConstraints.VERTICAL;
-        palletConstraints.gridx =0;
-        palletConstraints.gridy =0 ;
-      //  palletConstraints.ipady = 2;
-       // palletConstraints.weighty =0.5;
-//        palletConstraints.gridwidth = 50;
-      //  palletConstraints.gridheight = 2;
-      //  pallet.add(shapePallet, palletConstraints);
-
-      //  toolPallet.setPreferredSize(new Dimension(50,60));
-      //  palletConstraints.gridheight = 10;
-        palletConstraints.gridx = 0;
-        palletConstraints.gridy = 1;
-       // palletConstraints.gridheight = 2;
-     //   pallet.add(toolPallet, palletConstraints);
-     //   colourPallet.setPreferredSize(new Dimension(70,20));
-        palletConstraints.gridx = 0;
-        palletConstraints.gridy = 2;
-     //   palletConstraints.gridheight = 2;
-       // pallet.add(colourPallet, palletConstraints);
 
         pallet.add(shapePallet);
         pallet.add(toolPallet);
         pallet.add(colourPallet);
-        frame.getContentPane().add(x, BorderLayout.LINE_START);
-        //mainPanel.add(pallet, BorderLayout.EAST);
+
+
+        frame.getContentPane().add(basePallet, BorderLayout.LINE_START);
+
+
+
     }
 
-    public void showCanvas() {
+
+    private void showCanvas() {
         canvas = new VectorCanvas();
         canvas.setBackground(WHITE);
         canvas.setBorder(new LineBorder(BLACK));
