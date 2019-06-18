@@ -26,11 +26,15 @@ the respository clone
 * In the **Project** toolbar, navigate to **src** -> **Main**
 * Press **Ctrl** + **Shift** + **F10** to run program
 
+## How To Use Application
+For information on how to use application, please refer to the **302 Report** document, under the section **How to use Application**
+
 ## Versioning
 GitHub was used for version control. 
 
 ## Software Development Process
-Agile development principals were used via iteritive commit phases when implementing new features and fixing bugs.
+Agile development principals were used via iteritive commit phases when implementing new features and fixing bugs. Please refer to the 
+**302 Report** document, under the section **Agile Development** for more information. 
 
 ## Contributors 
 Jonathan Salazar, Joshua Inglis,  Mikhayla Stephenson, Jordy Garland
