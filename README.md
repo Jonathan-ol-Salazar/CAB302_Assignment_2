@@ -17,6 +17,14 @@ IntelliJ IDEA will be the IDE needed to run this application. Either Ultimate or
 
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/download/#section=windows)
 
+### Running Application 
+* Navigate to the **File** tab, then proceed to **New** -> **Project from Version Control** -> **Git**
+* A new window will appear called **Clone Repository**
+* Paste following URL (https://github.com/Jonathan-ol-Salazar/CAB302-Assignment-2.git) into URL section and select the Directory to save
+the respository clone
+* Click **Clone**
+* In the **Project** toolbar, navigate to **src** -> **Main**
+* Press **Ctrl** + **Shift** + **F10** to run program
 
 ## Versioning
 GitHub was used for version control. 
