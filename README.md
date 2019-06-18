@@ -11,9 +11,9 @@ The application provides a GUI similar the Microsoft Paint.
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisite Installations
-The applications listed below are needed to run the application.
+IntelliJ IDEA will be the IDE needed to run this application. Either Ultimate or Community version will work.
 ```
-IntelliJ IDEA
+[IntelliJ IDEA](https://www.jetbrains.com/idea/download/#section=windows)
 ```
 
 ## Versioning
