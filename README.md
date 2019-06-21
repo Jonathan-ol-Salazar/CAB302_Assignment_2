@@ -9,7 +9,7 @@ The image below shows the GUI. The application provides a GUI and functionality 
 
 ![Image of GUI](GUI.png)
 
-## Specification 
+## Specifications 
 Details on project specifications are located in the **CAB302 Assignment Specification** PDF.
 ## Getting Started 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
